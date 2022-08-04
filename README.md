@@ -1,6 +1,6 @@
 # appstoreconnect-build-tools
 
-A simple Python 3 CLI for interacting with the App Store Connect API to get build and version information.
+A simple Python 3 CLI for interacting with the App Store Connect API to get build and version information. Includes a tool determine the next expected build version for both App Store and TestFlight pre-release versions.
 
 ## Prerequisites
 
