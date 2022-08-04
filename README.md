@@ -14,9 +14,9 @@ A simple Python 3 CLI for interacting with the App Store Connect API to get buil
 
 All credential details for the App Store Connect API are read in from environment variables:
 
-export APPSTORE_ISSUER_ID=<issuer id>
-export APPSTORE_API_KEY_ID=<key id>
-export APPSTORE_API_PRIVATE_KEY=<private key>
+`export APPSTORE_ISSUER_ID=<issuer id>`
+`export APPSTORE_API_KEY_ID=<key id>`
+`export APPSTORE_API_PRIVATE_KEY=<private key>`
 
 ## Usage examples
 
