@@ -6,10 +6,14 @@ A simple Python 3 CLI for interacting with the App Store Connect API to get buil
 
 * Python 3
 * pydantic
-    - `pip install pydantic`
+    - `pip3 install pydantic`
 * requests
-    - `pip install requests`
-
+    - `pip3 install requests`
+* cryptography
+    - `pip3 install cryptography`
+* PyJWT
+    - `pip3 install PyJWT`   
+   
 ## Set environment variables
 
 All credential details for the App Store Connect API are read in from environment variables:
