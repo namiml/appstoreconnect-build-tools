@@ -6,9 +6,10 @@ from appstoreconnect_api import AppStoreConnectAPI
 if __name__ == "__main__":
     help_message = "get_next_build.py [bundle_id]"
 
-    prelease_version = False
+    prerelease_version = False
+    version = None
 
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         print(help_message)
         sys.exit(2)
 
@@ -16,15 +17,20 @@ if __name__ == "__main__":
     appstore_api = AppStoreConnectAPI()
 
     try:
-        opts, args = getopt.getopt(sys.argv[2:], "", ["prerelease"])
+        opts, args = getopt.getopt(sys.argv[2:], "", ["prerelease", "version="])
     except getopt.GetoptError:
         print(help_message)
         sys.exit(2)
 
     for opt, arg in opts:
         if opt in ("--prerelease"):
-            prelease_version = True
+            prerelease_version = True
+        elif opt in ("--version="):
+            version = arg
 
-    next_build = appstore_api.get_next_build(bundle_id, prerelease=prelease_version)
+    if version:
+        next_build = appstore_api.get_next_build_for_version(bundle_id, version, prerelease=prerelease_version)
+    else:
+        next_build = appstore_api.get_next_build(bundle_id, prerelease=prerelease_version)
     if next_build:
         print(next_build)

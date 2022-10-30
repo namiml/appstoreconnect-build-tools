@@ -21,7 +21,7 @@ class AppStoreApp(BaseModel):
         return
 
 class AppStoreBuildAttributes(BaseModel):
-    version: int
+    version: str 
 
 class AppStoreBuild(BaseModel):
     id: str
@@ -87,12 +87,36 @@ class AppStoreConnectAPI:
         r.raise_for_status()
         return r.json()
 
-    def get_latest_build(self, bundle_id, prerelease=True) -> int:
+    def get_latest_build_for_version(self, bundle_id, version_string: str, prerelease=True) -> str:
+        app = self.get_app(bundle_id)
+
+        builds = []
+        build_versions = []
+
+        if app:
+            versions = self.get_versions_for_app(app, prerelease)
+            for version in versions:
+                if prerelease:
+                    if version.attributes.version == version_string:
+                        builds = self.get_builds_for_version(version, prerelease)
+                else:
+                    if version.attributions.versionString == version_string:
+                        builds = self.get_builds_for_version(version, prerelease)
+
+
+            for build in builds:
+                build_versions.append(build.attributes.version)
+            if len(build_versions) > 0:
+               return max(build_versions)
+            return ""
+ 
+    def get_latest_build(self, bundle_id, prerelease=True, for_version: str = None) -> str:
         app = self.get_app(bundle_id)
         if app:
             version = self.get_latest_version_for_app(app, prerelease)
 
             build_versions = []
+
             builds = self.get_builds_for_version(version, prerelease)            
             for build in builds:
                 build_versions.append(build.attributes.version)
@@ -128,10 +152,23 @@ class AppStoreConnectAPI:
             builds = [parse_obj_as(AppStoreBuild, self.get(f"appStoreVersions/{version.id}/build")["data"])]
         return builds
 
-    def get_next_build(self, bundle_id, prerelease=True) -> int:
+    def increment_ver(self, version: str) -> str:
+        version = version.split('.')
+        if len(version) > 1:
+            version[len(version)-1] = str(int(version[2]) + 1)
+            return '.'.join(version)
+        else:
+            return str(int(version[0])+1)
+
+    def get_next_build(self, bundle_id, prerelease=True) -> str:
         latest_build = self.get_latest_build(bundle_id, prerelease)
         if latest_build:
-            return latest_build+1
+            return self.increment_ver(latest_build)
+
+    def get_next_build_for_version(self, bundle_id, version: str, prerelease=True) -> str:
+        latest_build = self.get_latest_build_for_version(bundle_id, version, prerelease)
+        if latest_build:
+            return self.increment_ver(latest_build)
 
     def get_current_version(self, bundle_id, prerelease=True) -> str:
         latest_version = self.get_latest_version(bundle_id, prerelease)
