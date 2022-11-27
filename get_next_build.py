@@ -9,7 +9,7 @@ if __name__ == "__main__":
     prerelease_version = False
     version = None
 
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print(help_message)
         sys.exit(2)
 

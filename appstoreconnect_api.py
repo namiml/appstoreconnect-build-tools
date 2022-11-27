@@ -119,7 +119,7 @@ class AppStoreConnectAPI:
 
             builds = self.get_builds_for_version(version, prerelease)            
             for build in builds:
-                build_versions.append(build.attributes.version)
+                build_versions.append(int(build.attributes.version))
             return max(build_versions)
 
     def get_latest_version(self, bundle_id, prerelease=True) -> str:
