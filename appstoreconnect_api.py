@@ -119,7 +119,7 @@ class AppStoreConnectAPI:
 
             builds = self.get_builds_for_version(version, prerelease)            
             for build in builds:
-                build_versions.append(int(build.attributes.version))
+                build_versions.append(float(build.attributes.version))
             return max(build_versions)
 
     def get_latest_version(self, bundle_id, prerelease=True) -> str:
@@ -163,12 +163,12 @@ class AppStoreConnectAPI:
     def get_next_build(self, bundle_id, prerelease=True) -> str:
         latest_build = self.get_latest_build(bundle_id, prerelease)
         if latest_build:
-            return self.increment_ver(latest_build)
+            return self.increment_ver(str(latest_build))
 
     def get_next_build_for_version(self, bundle_id, version: str, prerelease=True) -> str:
         latest_build = self.get_latest_build_for_version(bundle_id, version, prerelease)
         if latest_build:
-            return self.increment_ver(latest_build)
+            return self.increment_ver(str(latest_build))
 
     def get_current_version(self, bundle_id, prerelease=True) -> str:
         latest_version = self.get_latest_version(bundle_id, prerelease)
