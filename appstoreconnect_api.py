@@ -107,7 +107,7 @@ class AppStoreConnectAPI:
             for build in builds:
                 build_versions.append(build.attributes.version)
             if len(build_versions) > 0:
-               return max(build_versions)
+               return build_versions[0]
             return ""
  
     def get_latest_build(self, bundle_id, prerelease=True, for_version: str = None) -> str:
