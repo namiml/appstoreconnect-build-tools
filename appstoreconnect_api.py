@@ -97,10 +97,10 @@ class AppStoreConnectAPI:
             versions = self.get_versions_for_app(app, prerelease)
             for version in versions:
                 if prerelease:
-                    if version.attributes.version == version_string and version.attribute.platform == platform:
+                    if version.attributes.version == version_string and version.attributes.platform == platform:
                         builds = self.get_builds_for_version(version, prerelease)
                 else:
-                    if version.attributions.versionString == version_string and version.attribute.platform == platform:
+                    if version.attributions.versionString == version_string and version.attributes.platform == platform:
                         builds = self.get_builds_for_version(version, prerelease)
 
 
