@@ -8,6 +8,7 @@ if __name__ == "__main__":
 
     prerelease_version = False
     version = None
+    platform = "IOS"
 
     if len(sys.argv) < 2:
         print(help_message)
@@ -17,7 +18,7 @@ if __name__ == "__main__":
     appstore_api = AppStoreConnectAPI()
 
     try:
-        opts, args = getopt.getopt(sys.argv[2:], "", ["prerelease", "version="])
+        opts, args = getopt.getopt(sys.argv[2:], "", ["prerelease", "version=", "platform="])
     except getopt.GetoptError:
         print(help_message)
         sys.exit(2)
@@ -25,12 +26,14 @@ if __name__ == "__main__":
     for opt, arg in opts:
         if opt in ("--prerelease"):
             prerelease_version = True
-        elif opt in ("--version="):
+        if opt in ("--version="):
             version = arg
+        if opt in ("--platform="):
+            platform = arg
 
     if version:
-        next_build = appstore_api.get_next_build_for_version(bundle_id, version, prerelease=prerelease_version)
+        next_build = appstore_api.get_next_build_for_version(bundle_id, version, prerelease=prerelease_version, platform=platform)
     else:
-        next_build = appstore_api.get_next_build(bundle_id, prerelease=prerelease_version)
+        next_build = appstore_api.get_next_build(bundle_id, prerelease=prerelease_version, platform=platform)
     if next_build:
         print(next_build)

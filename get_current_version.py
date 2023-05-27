@@ -5,9 +5,10 @@ from appstoreconnect_api import AppStoreConnectAPI
 
 
 if __name__ == "__main__":
-    help_message = "get_current_version.py [bundle_id] --prerelease"
+    help_message = "get_current_version.py [bundle_id] --prerelease --platform=[IOS,TV_OS]"
 
     prelease_version = False
+    platform = "IOS"
 
     if len(sys.argv) < 2:
         print(help_message)
@@ -17,7 +18,7 @@ if __name__ == "__main__":
     appstore_api = AppStoreConnectAPI()
 
     try:
-        opts, args = getopt.getopt(sys.argv[2:], "", ["prerelease"])
+        opts, args = getopt.getopt(sys.argv[2:], "", ["prerelease", "platform="])
     except getopt.GetoptError:
         print(help_message)
         sys.exit(2)
@@ -25,7 +26,8 @@ if __name__ == "__main__":
     for opt, arg in opts:
         if opt in ("--prerelease"):
             prelease_version = True
-
-    latest_build = appstore_api.get_current_version(bundle_id, prerelease=prelease_version)
+        if opt in ("--platform="):
+            platform = arg
+    latest_build = appstore_api.get_current_version(bundle_id, prerelease=prelease_version, platform=platform)
     if latest_build:
         print(latest_build)
