@@ -41,7 +41,7 @@ class AppStoreConnectAPICredentials(BaseModel):
         extra = "forbid"
 
 class AppStoreConnectTokenManager:
-    TOKEN_TTL = timedelta(minutes=20)
+    TOKEN_TTL = timedelta(minutes=15)
 
     def __init__(self):
         try:
