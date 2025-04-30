@@ -281,7 +281,7 @@ class AppStoreConnectAPI:
                 "filter[preReleaseVersion.platform]" : platform
         }
 
-        apps = parse_obj_as(List[AppStoreApp], self.get("apps")["data"], params)
+        apps = parse_obj_as(List[AppStoreApp], self.get("apps", params)["data"])
         for app in apps:
             if app.attributes.bundleId == bundle_id:
                 return app
