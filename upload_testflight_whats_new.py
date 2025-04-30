@@ -50,8 +50,6 @@ if __name__ == "__main__":
     
     if error is False:
         for retry in range(retries):
-            time.sleep(5)
-
             if version:
                 latest_build_obj = appstore_api.get_latest_build_obj_for_version(bundle_id, version, prerelease=prerelease_version, platform=platform)
             else:
@@ -59,15 +57,17 @@ if __name__ == "__main__":
             if latest_build_obj:
                 if latest_build_obj.attributes.processingState != "VALID":
                     print("ERROR: TestFlight build is still processing...is for pre-release testflight builds only")
-
+                    time.sleep(60)
                 else:
                     response = appstore_api.upload_testflight_whats_new(latest_build_obj.id, whats_new)
                     if response.status_code == 201:
                         print (f"What's new upload successful for build {latest_build_obj.attributes.version}")
                         break
                     else:
-                        print (f"What's new upload failed for build {latest_build_obj.attributes.version}\nstatus {response.status_code} - {response.json()}")                        
+                        print (f"What's new upload failed for build {latest_build_obj.attributes.version}\nstatus {response.status_code} - {response.json()}")
+                        break
             else:
                 print("Did not find a build id, release notes not updated")
+                break
 
         print (f"What's new upload failed after 5 retries")                        
