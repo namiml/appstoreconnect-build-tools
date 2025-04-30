@@ -209,7 +209,7 @@ class AppStoreConnectAPI:
             return ""
 
     def get_latest_version(self, bundle_id, prerelease=True, platform="IOS") -> str:
-        app = self.get_app(bundle_id, params)
+        app = self.get_app(bundle_id)
         if app:
             version = self.get_latest_version_for_app(app, prerelease, platform)
             if version:
