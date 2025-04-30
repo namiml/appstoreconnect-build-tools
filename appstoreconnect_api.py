@@ -22,6 +22,7 @@ class AppStoreApp(BaseModel):
 
 class AppStoreBuildAttributes(BaseModel):
     version: str 
+    processingState: str # Possible Values: PROCESSING, FAILED, INVALID, VALID
 
 class AppStoreBuild(BaseModel):
     id: str
@@ -88,6 +89,33 @@ class AppStoreConnectAPI:
         r.raise_for_status()
         return r.json()
 
+    def post(self, path, payload) -> dict:
+        jwt = self.token_manager.get_token()
+        r = requests.post(
+            f"{self._api_baseurl()}{path}",
+            json=payload,
+            headers={
+                "Authorization": f"Bearer {jwt}",
+                "Content-Type": "application/json",
+            },
+        )
+        # r.raise_for_status()
+        return r
+
+    def patch(self, path, payload) -> dict:
+        jwt = self.token_manager.get_token()
+        r = requests.patch(
+            f"{self._api_baseurl()}{path}",
+            json=payload,
+            headers={
+                "Authorization": f"Bearer {jwt}",
+                "Content-Type": "application/json",
+            },
+        )
+        r.raise_for_status()
+        return r.json()
+
+
     def get_latest_build_for_version(self, bundle_id, version_string: str, prerelease=True, platform="IOS") -> str:
         app = self.get_app(bundle_id)
         builds = []
@@ -114,6 +142,30 @@ class AppStoreConnectAPI:
                 print(f"Didn't find a release version {version_string} for {bundle_id} on platform {platform}.")  
             return ""
  
+    def get_latest_build_obj_for_version(self, bundle_id, version_string: str, prerelease=True, platform="IOS") -> str:
+        app = self.get_app(bundle_id)
+        builds = []
+        build_versions = []
+
+        if app:
+            versions = self.get_versions_for_app(app, prerelease)
+            for version in versions:
+                if prerelease:
+                    if version.attributes.version == version_string and version.attributes.platform == platform:
+                        builds = self.get_builds_for_version(version, prerelease)
+                else:
+                    if version.attributions.versionString == version_string and version.attributes.platform == platform:
+                        builds = self.get_builds_for_version(version, prerelease)
+
+
+            if len(builds) > 0:
+                return builds[0]
+            if prerelease:
+                print(f"Didn't find a prerelease version {version_string} for {bundle_id} on platform {platform}.")
+            else:
+                print(f"Didn't find a release version {version_string} for {bundle_id} on platform {platform}.")  
+            return ""
+
     def get_latest_build(self, bundle_id, prerelease=True, for_version: str = None, platform="IOS") -> str:
         app = self.get_app(bundle_id)
         if app:
@@ -126,6 +178,29 @@ class AppStoreConnectAPI:
                     for build in builds:
                         build_versions.append(int(build.attributes.version))
                     return max(build_versions)
+
+            if prerelease:
+                print(f"Didn't find a prerelease version for {bundle_id} on platform {platform}.")
+            else:
+                print(f"Didn't find a release version for {bundle_id} on platform {platform}.")
+            return ""
+
+    def get_latest_build_obj(self, bundle_id, prerelease=True, for_version: str = None, platform="IOS") -> str:
+        app = self.get_app(bundle_id)
+        if app:
+            version = self.get_latest_version_for_app(app, prerelease, platform)
+            build_versions = []
+
+            if version:
+                builds = self.get_builds_for_version(version, prerelease)
+                if builds:
+                    for build in builds:
+                        build_versions.append(int(build.attributes.version))
+                    max_version = max(build_versions)
+
+                    for build in builds:
+                        if int(build.attributes.version) == max_version:
+                            return build
 
             if prerelease:
                 print(f"Didn't find a prerelease version for {bundle_id} on platform {platform}.")
@@ -208,3 +283,23 @@ class AppStoreConnectAPI:
 
         print(f"App with bundle_id {bundle_id} not found.")
         return
+
+    def upload_testflight_whats_new(self, build_id: str, release_notes: str):
+            payload = {
+                "data": {
+                    "type": "betaBuildLocalizations",
+                    "relationships": {
+                        "build": {
+                            "data": {
+                                "id": build_id,
+                                "type": "builds"
+                            }
+                        }
+                    },
+                    "attributes": {
+                        "locale": "en-US",
+                        "whatsNew": release_notes
+                    }
+                }
+            }
+            return self.post(f"betaBuildLocalizations", payload)

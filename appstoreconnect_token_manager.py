@@ -4,7 +4,7 @@ from datetime import datetime, timezone, timedelta
 from uuid import UUID
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from pydantic import BaseModel, constr, root_validator, validator, ValidationError
-from pydantic.schema import Optional
+from typing import Optional
 
 class AppStoreConnectAPICredentials(BaseModel):
     issuer_id: Optional[UUID] = os.getenv("APPSTORE_ISSUER_ID")
