@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
                 else:
                     response = appstore_api.upload_testflight_whats_new(latest_build_obj.id, whats_new)
-                    if response.status_code == 200:
+                    if response.status_code == 201:
                         print (f"What's new upload successful for build {latest_build_obj.attributes.version}")
                         break
                     else:

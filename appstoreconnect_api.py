@@ -122,13 +122,13 @@ class AppStoreConnectAPI:
         build_versions = []
 
         if app:
-            versions = self.get_versions_for_app(app, prerelease)
+            versions = self.get_versions_for_app(app, prerelease, platform)
             for version in versions:
                 if prerelease:
-                    if version.attributes.version == version_string and version.attributes.platform == platform:
+#                    if version.attributes.version == version_string:
                         builds = self.get_builds_for_version(version, prerelease)
                 else:
-                    if version.attributions.versionString == version_string and version.attributes.platform == platform:
+                    if version.attributions.versionString == version_string:
                         builds = self.get_builds_for_version(version, prerelease)
 
 
@@ -148,13 +148,13 @@ class AppStoreConnectAPI:
         build_versions = []
 
         if app:
-            versions = self.get_versions_for_app(app, prerelease)
+            versions = self.get_versions_for_app(app, prerelease, platform)
             for version in versions:
                 if prerelease:
-                    if version.attributes.version == version_string and version.attributes.platform == platform:
+                    if version.attributes.version == version_string:
                         builds = self.get_builds_for_version(version, prerelease)
                 else:
-                    if version.attributions.versionString == version_string and version.attributes.platform == platform:
+                    if version.attributions.versionString == version_string:
                         builds = self.get_builds_for_version(version, prerelease)
 
 
@@ -274,9 +274,14 @@ class AppStoreConnectAPI:
             else:         
                 return latest_version.attributes.versionString 
 
-    def get_app(self, bundle_id: str) -> list[dict]:
+    def get_app(self, bundle_id: str, platform="IOS") -> list[dict]:
         # TODO handle paging
-        apps = parse_obj_as(List[AppStoreApp], self.get("apps")["data"])
+
+        params = {
+                "filter[preReleaseVersion.platform]" : platform
+        }
+
+        apps = parse_obj_as(List[AppStoreApp], self.get("apps")["data"], params)
         for app in apps:
             if app.attributes.bundleId == bundle_id:
                 return app
