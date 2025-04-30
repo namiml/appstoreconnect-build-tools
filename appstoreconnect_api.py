@@ -209,7 +209,7 @@ class AppStoreConnectAPI:
             return ""
 
     def get_latest_version(self, bundle_id, prerelease=True, platform="IOS") -> str:
-        app = self.get_app(bundle_id)
+        app = self.get_app(bundle_id, params)
         if app:
             version = self.get_latest_version_for_app(app, prerelease, platform)
             if version:
@@ -274,14 +274,10 @@ class AppStoreConnectAPI:
             else:         
                 return latest_version.attributes.versionString 
 
-    def get_app(self, bundle_id: str, platform="IOS") -> list[dict]:
+    def get_app(self, bundle_id: str) -> list[dict]:
         # TODO handle paging
 
-        params = {
-                "filter[preReleaseVersion.platform]" : platform
-        }
-
-        apps = parse_obj_as(List[AppStoreApp], self.get("apps", params)["data"])
+        apps = parse_obj_as(List[AppStoreApp], self.get("apps")["data"])
         for app in apps:
             if app.attributes.bundleId == bundle_id:
                 return app
