@@ -6,7 +6,7 @@ from appstoreconnect_api import AppStoreConnectAPI
 
 
 if __name__ == "__main__":
-    help_message = "update_release_notes.py [bundle_id] --notes=[whats_new] --version=[version] --platform=[IOS,TV_OS] --prerelease"
+    help_message = "upload_testflight_whats_new.py [bundle_id] --notes=[whats_new] --version=[version] --platform=[IOS,TV_OS] --prerelease"
 
     whats_new = None
     prerelease_version = False
@@ -40,10 +40,10 @@ if __name__ == "__main__":
     error = False
 
     if whats_new is None:
-        print("update_testflight_whats_new.py: --notes=[whats_new] is missing")
+        print("upload_testflight_whats_new.py: --notes=[whats_new] is missing")
         error = True    
     if prerelease_version is False:
-        print("update_testflight_whats_new.py: this script is for pre-release testflight builds only ")
+        print("upload_testflight_whats_new.py: this script is for pre-release testflight builds only ")
         error = True
     
     retries = 5
