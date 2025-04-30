@@ -34,7 +34,7 @@ if __name__ == "__main__":
             version = arg
         if opt in ("--platform="):
             platform = arg
-        if opt in ("notes="):
+        if opt in ("--notes="):
             whats_new = arg
 
     error = False
@@ -50,6 +50,7 @@ if __name__ == "__main__":
     
     if error is False:
         for retry in range(retries):
+            print (f"What's new upload attempt {retry}")
             if version:
                 latest_build_obj = appstore_api.get_latest_build_obj_for_version(bundle_id, version, prerelease=prerelease_version, platform=platform)
             else:
@@ -60,7 +61,8 @@ if __name__ == "__main__":
                     time.sleep(60)
                 else:
                     response = appstore_api.upload_testflight_whats_new(latest_build_obj.id, whats_new)
-                    if response.status_code == 201:
+                    if response.status_code == 201 or response.status_code == 200:
+                        print(response.json())
                         print (f"What's new upload successful for build {latest_build_obj.attributes.version}")
                         break
                     else:
@@ -69,5 +71,3 @@ if __name__ == "__main__":
             else:
                 print("Did not find a build id, release notes not updated")
                 break
-
-        print (f"What's new upload failed after 5 retries")                        

@@ -99,7 +99,6 @@ class AppStoreConnectAPI:
                 "Content-Type": "application/json",
             },
         )
-        # r.raise_for_status()
         return r
 
     def patch(self, path, payload) -> dict:
@@ -112,8 +111,7 @@ class AppStoreConnectAPI:
                 "Content-Type": "application/json",
             },
         )
-        r.raise_for_status()
-        return r.json()
+        return r
 
 
     def get_latest_build_for_version(self, bundle_id, version_string: str, prerelease=True, platform="IOS") -> str:
@@ -285,22 +283,48 @@ class AppStoreConnectAPI:
         print(f"App with bundle_id {bundle_id} not found.")
         return
 
+    def get_beta_localizations(self, build_id: str):
+        print(build_id)
+        path = f"builds/{build_id}/betaBuildLocalizations"
+        response = self.get(path)
+
+        for data in response["data"]:
+            localization_id = data["id"]
+            if data["attributes"]["locale"] == "en-US":
+                return localization_id
+        return None
+
     def upload_testflight_whats_new(self, build_id: str, release_notes: str):
-            payload = {
-                "data": {
-                    "type": "betaBuildLocalizations",
-                    "relationships": {
-                        "build": {
-                            "data": {
-                                "id": build_id,
-                                "type": "builds"
+
+            localization_id = self.get_beta_localizations(build_id)
+            if localization_id is None:
+                payload = {
+                    "data": {
+                        "type": "betaBuildLocalizations",
+                        "relationships": {
+                            "build": {
+                                "data": {
+                                    "id": build_id,
+                                    "type": "builds"
+                                }
                             }
+                        },
+                        "attributes": {
+                            "locale": "en-US",
+                            "whatsNew": release_notes
                         }
-                    },
-                    "attributes": {
-                        "locale": "en-US",
-                        "whatsNew": release_notes
                     }
                 }
-            }
-            return self.post(f"betaBuildLocalizations", payload)
+                return self.post(f"betaBuildLocalizations", payload)
+
+            else:
+                payload = {
+                    "data": {
+                        "id": localization_id,
+                        "type": "betaBuildLocalizations",
+                        "attributes": {
+                            "whatsNew": release_notes
+                        }
+                    }
+                }
+                return self.patch(f"betaBuildLocalizations/{localization_id}", payload)
