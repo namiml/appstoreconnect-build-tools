@@ -18,11 +18,10 @@ if __name__ == "__main__":
         sys.exit(2)
 
     bundle_id = sys.argv[1]
-    whats_new = sys.argv[2]
     appstore_api = AppStoreConnectAPI()
 
     try:
-        opts, args = getopt.getopt(sys.argv[3:], "", ["prerelease", "notes=", "version=", "platform="])
+        opts, args = getopt.getopt(sys.argv[2:], "", ["prerelease", "notes=", "version=", "platform="])
     except getopt.GetoptError:
         print(help_message)
         sys.exit(2)
